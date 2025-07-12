@@ -1,4 +1,3 @@
-
 /**
  * @file This is the main entry point of the application.
  * It sets up the Three.js scene, camera, renderer, and the main animation loop.
@@ -10,7 +9,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin } from '@pixiv/three-vrm';
 import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
-import { Avatar } from './Avatar';
 import { VRPlayer } from './vrplayer';
 
 // シーン作成
@@ -72,24 +70,24 @@ const clock = new THREE.Clock();
 
 // playerの初期化
 const loader = new GLTFLoader();
-const avatar = new Avatar(scene, loader);
-avatar.loadVRM('/shapellFuku5.vrm');
-const player = new VRPlayer(avatar, renderer);
 loader.register((parser) => {
   return new VRMLoaderPlugin(parser);
 });
+
+const vrplayer = new VRPlayer(scene, renderer, loader);
+vrplayer.loadVRM('/shapellFuku5.vrm');
 
 function animate() {
   renderer.setAnimationLoop(animate);
   const delta = clock.getDelta();
 
-  if (avatar.vrm) {
+  if (vrplayer.avatar.vrm) {
     if (renderer.xr.isPresenting) {
-      player.update(delta);
+      vrplayer.update(delta);
     }
 
-    avatar.update();
-    avatar.vrm.update(delta);
+    vrplayer.avatar.update();
+    vrplayer.avatar.vrm.update(delta);
   }
 
   if (!renderer.xr.isPresenting) {
