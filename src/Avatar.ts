@@ -64,7 +64,6 @@ export class Avatar {
         if (vrm) {
             this._vrm = vrm;
             this._scene.add(vrm.scene);
-            vrm.scene.rotation.y = Math.PI; // Rotate 180 degrees
             VRMUtils.rotateVRM0(vrm);
             this._vrmIK = new VrmIK(vrm);
         }
