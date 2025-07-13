@@ -33,15 +33,17 @@ import { VrmIK } from './IK';
 
 export class Avatar {
 
-    private _scene: THREE.Scene;
+    private _scene: THREE.Object3D;
     private _vrm: VRM | null = null;
     private _vrmIK: VrmIK | null = null;
 
     private _loader: GLTFLoader;
+    private _scaleFactor: number;
 
-    constructor(scene: THREE.Scene, loader: GLTFLoader) {
+    constructor(scene: THREE.Scene, loader: GLTFLoader, scaleFactor: number) {
         this._scene = scene;
         this._loader = loader;
+        this._scaleFactor = scaleFactor;
     }
 
     public get vrmIK(): VrmIK | null {
@@ -63,6 +65,7 @@ export class Avatar {
 
         if (vrm) {
             this._vrm = vrm;
+            this._vrm.scene.scale.set(this._scaleFactor, this._scaleFactor, this._scaleFactor);
             this._scene.add(vrm.scene);
             VRMUtils.rotateVRM0(vrm);
             this._vrmIK = new VrmIK(vrm);

@@ -6,8 +6,6 @@
 import * as THREE from 'three';
 import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { VRMLoaderPlugin } from '@pixiv/three-vrm';
 import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
 import { VRPlayer } from './vrplayer';
 
@@ -37,21 +35,25 @@ const light = new THREE.DirectionalLight(0xffffff);
 light.position.set(1, 1, -1).normalize(); // 右上奥。
 scene.add(light);
 
+// Create a group to hold all world objects that will move with the player's locomotion
+const groundAndItemsGroup = new THREE.Group();
+scene.add(groundAndItemsGroup);
+
 // ground
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(10, 10),
   new THREE.MeshStandardMaterial({ color: 0x808080, roughness: 0.8, metalness: 0.2 })
 );
 ground.rotation.x = -Math.PI / 2;
-scene.add(ground);
+groundAndItemsGroup.add(ground);
 
 // box
 const box = new THREE.Mesh(
-  new THREE.BoxGeometry(0.5, 0.5, 0.5),
+  new THREE.BoxGeometry(0.5, 1, 0.5),
   new THREE.MeshStandardMaterial({ color: 0xff0000 })
 );
 box.position.set(0.25, 0.25, 1);
-scene.add(box);
+groundAndItemsGroup.add(box);
 
 // Mirror
 const mirror = new Reflector(
@@ -64,17 +66,12 @@ const mirror = new Reflector(
 );
 mirror.position.y = 2;
 mirror.position.z = -2;
-scene.add(mirror);
+groundAndItemsGroup.add(mirror);
 
 const clock = new THREE.Clock();
 
 // playerの初期化
-const loader = new GLTFLoader();
-loader.register((parser) => {
-  return new VRMLoaderPlugin(parser);
-});
-
-const vrplayer = new VRPlayer(scene, renderer, loader);
+const vrplayer = new VRPlayer(scene, renderer, groundAndItemsGroup);
 vrplayer.loadVRM('/shapellFuku5.vrm');
 
 function animate() {
